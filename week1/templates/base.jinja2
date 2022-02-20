@@ -1,11 +1,15 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Search with Machine Learning</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-  <h1><a href="{{ url_for("query") }}">Search with Machine Learning</a></h1>
-  <ul>
-  </ul>
+<head>
+  <title>{% block title %}{% endblock %} - Search with Machine Learning</title>
+  <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="bg-washed-yellow pv1 ph2">
+  <a class="link f4 dark-blue sans-serif fw6" href="{{ url_for("query") }}">Search with Machine Learning</a>
 </nav>
+
 <section class="content">
   <header id="main-header" class="header">
     <div id="header-content">{% block header %}{% endblock %}</div>
@@ -16,6 +20,7 @@
   {% endfor %}
   {% block content %}{% endblock %}</body>
 </section>
+
 <section class="footer">
   {% block footer %}
     <div id="main-footer" class="footer">
@@ -23,3 +28,4 @@
     </div>
   {% endblock %}
 </section>
+</body>

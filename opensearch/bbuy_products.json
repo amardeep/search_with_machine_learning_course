@@ -44,7 +44,7 @@
         }
       },
       "bestSellingRank" : {
-        "type" : "text",
+        "type" : "integer",
         "fields" : {
           "keyword" : {
             "type" : "keyword",
@@ -366,7 +366,7 @@
         }
       },
       "salesRankLongTerm" : {
-        "type" : "text",
+        "type" : "integer",
         "fields" : {
           "keyword" : {
             "type" : "keyword",
@@ -375,7 +375,7 @@
         }
       },
       "salesRankMediumTerm" : {
-        "type" : "text",
+        "type" : "integer",
         "fields" : {
           "keyword" : {
             "type" : "keyword",
@@ -384,7 +384,7 @@
         }
       },
       "salesRankShortTerm" : {
-        "type" : "text",
+        "type" : "integer",
         "fields" : {
           "keyword" : {
             "type" : "keyword",
@@ -393,7 +393,8 @@
         }
       },
       "shippingCost" : {
-        "type" : "text",
+        "type": "scaled_float",
+        "scaling_factor": 100,
         "fields" : {
           "keyword" : {
             "type" : "keyword",
