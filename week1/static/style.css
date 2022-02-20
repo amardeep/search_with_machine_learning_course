@@ -1,3 +1,38 @@
+/* Reset from https://www.joshwcomeau.com/css/custom-css-reset/ */
+*, *::before, *::after {
+    box-sizing: border-box;
+  }
+* {
+  margin: 0;
+}
+html, body {
+  height: 100%;
+}
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+#root, #__next {
+  isolation: isolate;
+}
+
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
 /* Search stylings */
 #search-box {
     height: 50px;
@@ -30,7 +65,13 @@
 }
 
 .search-result{
-    margin-bottom: 10px;
+    margin-bottom: 24px;
+}
+
+.search-result-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
 }
 
 .search-result > img{
@@ -38,7 +79,7 @@
 }
 
 .search-result-odd{
-    background: lightgray;
+    /* background: lightgray; */
 }
 
 .search-result-name {
@@ -70,6 +111,7 @@
 
 #search-results-container{
     grid-row-start: 2;
+    max-width: 60em;
 }
 
 .aggregations-result{
