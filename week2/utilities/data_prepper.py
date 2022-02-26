@@ -1,5 +1,6 @@
 # This file processes our queries, runs them through OpenSearch against the BBuy Products index to fetch their "rank" and so they can be used properly in a click model
 
+import json
 import ltr_utils as lu
 import numpy as np
 import pandas as pd
@@ -234,6 +235,8 @@ class DataPrepper:
                                                 size=len(query_doc_ids), terms_field=terms_field)
         # IMPLEMENT_START --
         res = self.opensearch.search(index=self.index_name, body=log_query)
+        if key == "ipad":
+            print(json.dumps(log_query))
 
         # Create _id -> hit mapping
         if terms_field == "_id":

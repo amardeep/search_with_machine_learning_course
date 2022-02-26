@@ -8,7 +8,10 @@ def create_rescore_ltr_query(user_query, query_obj, click_prior_query, ltr_model
     # Create the base query, use a much bigger window
     #add on the rescore
     sltr = {
-        "params": {"keywords": user_query},
+        "params": {
+            "keywords": user_query, 
+            "click_prior_query": click_prior_query
+        },
         "model": ltr_model_name,
         "store": ltr_store_name,
     }
@@ -77,7 +80,10 @@ def create_feature_log_query(query, doc_ids, click_prior_query, featureset_name,
                             "_name": "logged_featureset",
                             "featureset": featureset_name,
                             "store": ltr_store_name,
-                            "params": {"keywords": query},
+                            "params": {
+                                "keywords": query,
+                                "click_prior_query": click_prior_query
+                            },
                         }
                     },
                 ]
