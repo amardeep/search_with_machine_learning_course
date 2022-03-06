@@ -1,7 +1,9 @@
-import random
 import argparse
 from pathlib import Path
+import string
 import pandas as pd
+import nltk
+from nltk.stem.snowball import SnowballStemmer
 
 # Dataframe with products data from xml files
 products_df_file = Path("/workspace/datasets/fasttext/pruned_products_df.pk")
@@ -30,9 +32,17 @@ output_file = Path(args.output)
 output_file.parent.mkdir(exist_ok=True)
 sample_rate = args.sample_rate
 
+translation_table = str.maketrans("", "", string.punctuation)
 
 def transform_training_data(name):
     name = name.replace("\n", " ")
+    name = name.lower()
+    # remove punctuation
+    name = name.translate(translation_table)
+    tokens = nltk.word_tokenize(name)
+    stemmer = SnowballStemmer("english")
+    tokens = [stemmer.stem(t) for t in tokens]
+    return " ".join(tokens)
 
 
 df: pd.DataFrame = pd.read_pickle(products_df_file)
