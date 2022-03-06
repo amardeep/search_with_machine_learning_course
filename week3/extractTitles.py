@@ -32,7 +32,7 @@ output_file = Path(args.output)
 output_file.parent.mkdir(exist_ok=True)
 sample_rate = args.sample_rate
 
-translation_table = str.maketrans("", "", string.punctuation)
+translation_table = str.maketrans("", "", "®©™" + string.punctuation)
 
 def transform_training_data(name):
     name = name.replace("\n", " ")
