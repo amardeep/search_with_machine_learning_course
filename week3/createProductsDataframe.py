@@ -13,7 +13,7 @@ import click
 # - <output_prefix>.csv - csv with products and categories
 def create_products_df(input_dir: Path, output_dir: Path, output_prefix: str):
     rows = []
-    for filepath in Path(input_dir).glob("*.xml*"):
+    for filepath in Path(input_dir).glob("*.xml.gz"):
         print("Processing %s" % filepath)
         f = fileinput.hook_compressed(filepath, "rb")
         root = ET.parse(f).getroot()
