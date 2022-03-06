@@ -1,8 +1,6 @@
 # %%
-import fileinput
 import string
 from types import SimpleNamespace
-from typing import Union
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import pandas as pd
@@ -10,19 +8,17 @@ import click
 from nltk.stem.snowball import SnowballStemmer
 import nltk
 
+#####
+# NOTE:
+# - Logic to parse xml files is moved to createProductsDataframe.py. This file
+#   reads pickled dataframe constructed in that file.
+#####
 
 # %%
 cfg = SimpleNamespace()
-cfg.input = Path("/workspace/search_with_machine_learning_course/data/pruned_products/")
 cfg.output_dir = Path("/workspace/datasets/fasttext/")
-cfg.pcats_df_file = "pcats_df.pk"
-cfg.train_df_file = "pcats_train_df.pk"
-cfg.test_df_file = "pcats_test_df.pk"
+cfg.products_df_file = Path("/workspace/datasets/fasttext/pruned_products_df.pk")
 cfg.random_seed = 42
-
-# %%
-# Used for debugging while running interactively
-dbg = SimpleNamespace()
 
 # %%
 translation_table = str.maketrans("", "", string.punctuation)
@@ -42,25 +38,18 @@ def transform_name(name: str):
 
 @click.group(context_settings={"show_default": True})
 @click.option(
-    "--input",
-    default=cfg.input,
-    help="The directory containing product data",
+    "--products_df",
+    default=cfg.products_df_file,
+    help="Pickled dataframe with product data",
 )
 @click.option(
     "--output_dir",
     default=cfg.output_dir,
     help="The directory where output files are stored",
 )
-def cli(input, output_dir):
-    cfg.input = Path(input)
+def cli(products_df, output_dir):
+    cfg.products_df_file = Path(products_df)
     cfg.output_dir = Path(output_dir)
-
-
-@cli.command()
-def prepare_pcats_df():
-    """Create pickled dataframe from products xml files.
-    """
-    pcats_xml_to_df(cfg.input, cfg.output_dir / cfg.pcats_df_file)
 
 
 @cli.command()
@@ -91,6 +80,7 @@ def prepare_input(run_subdir, transform, min_products, max_depth):
     Create fasttext train and test files.
     """
     write_fasttext_files(
+        products_df_file=cfg.products_df_file,
         data_output_dir=cfg.output_dir / run_subdir,
         transform=transform,
         min_products=min_products,
@@ -100,7 +90,6 @@ def prepare_input(run_subdir, transform, min_products, max_depth):
 
 def df_to_text(df, filepath: Path, transform: bool):
     print(f"Writing {len(df)} rows to {filepath}")
-    # df["label"] = "__label__" + df["cat"]
     with filepath.open("w") as f:
         for row in df.itertuples():
             text = transform_name(row.name) if transform else row.name
@@ -189,14 +178,16 @@ def map_categories_to_ancestor_at_depth(df, data_output_dir, max_depth: int = 0)
 
 # %%
 def write_fasttext_files(
-    data_output_dir: Path, transform: bool, min_products: bool, max_depth: int
+    products_df_file: Path,
+    data_output_dir: Path,
+    transform: bool,
+    min_products: bool,
+    max_depth: int,
 ):
     data_output_dir.mkdir(exist_ok=True)
-    dbg.data_output_dir = data_output_dir
 
-    fp = cfg.output_dir / cfg.pcats_df_file
-    print(f"Reading df from {fp}")
-    df = pd.read_pickle(str(fp))
+    print(f"Reading df from {products_df_file}")
+    df = pd.read_pickle(str(products_df_file))
     df = df.sample(frac=1, random_state=cfg.random_seed)
     # prune categories for min_products
     df = prune_categories_for_min_products(df, min_products)
@@ -212,34 +203,7 @@ def write_fasttext_files(
 
 
 # %%
-def pcats_xml_to_df(input: Union[str, Path], pcats_df_file: Union[str, Path]):
-    rows = []
-    for filepath in Path(input).glob("*.xml*"):
-        print("Processing %s" % filepath)
-        f = fileinput.hook_compressed(filepath, "rb")
-        tree = ET.parse(f)
-        root = tree.getroot()
-        for child in root:
-            name = child.findtext("./name")
-            e_cats = child.findall("./categoryPath/category")
-            if name is None or len(e_cats) == 0:
-                continue
-            cat = e_cats[-1].findtext("./id")
-            if cat is None:
-                continue
-            # Replace newline chars with spaces so fastText doesn't complain
-            name = name.replace("\n", " ")
-            row = {
-                "name": name,
-                "cat": cat,
-            }
-            rows.append(row)
-
-    df = pd.DataFrame(rows)
-    print(f"No. of rows = {len(df)}")
-    print(f"Writing product categories dataframe to: {pcats_df_file}")
-    df.to_pickle(str(pcats_df_file))
-
-
 if __name__ == "__main__":
     cli()
+
+# %%
